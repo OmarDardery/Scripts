@@ -56,7 +56,13 @@ printf '\n'
 unset WEB_PASS2
 
 # Enable rootdir on the existing 'local' storage without removing other content types.
-CONTENT="$(pvesm config "$STORAGE" | sed -n 's/^[[:space:]]*content[[:space:]]\+//p' | head -n 1)"
+CONTENT="$(awk -v target="$STORAGE" '
+  /^[^[:space:]#][^:]*:[[:space:]]/ {
+    active = ($2 == target)
+    next
+  }
+  active && /^[[:space:]]+content[[:space:]]+/ { print $2; exit }
+' /etc/pve/storage.cfg)"
 [[ -n "$CONTENT" ]] || die "Cannot determine storage content settings for $STORAGE."
 if [[ ",$CONTENT," != *",rootdir,"* ]]; then
   echo "Storage '$STORAGE' currently allows: $CONTENT"

@@ -42,15 +42,15 @@ echo "  IP: $IP/$CIDR via $GW on $BRIDGE"
 echo "  Disk: $DISK_GB GB on $STORAGE, RAM: $RAM_MB MB, CPU: $CORES"
 echo "  URL: https://$IP:3001/"
 echo "  Note: Ping cannot guarantee that an IP address is free. Confirm it is outside DHCP allocations."
-read -r -p "Have you reserved/verified this IP, and proceed? [y/N] " answer
+read -r -p "Have you reserved/verified this IP, and proceed? [y/N] " answer </dev/tty
 [[ "$answer" =~ ^[Yy]$ ]] || die "Cancelled."
-read -r -p "Web login username [orca]: " WEB_USER
+read -r -p "Web login username [orca]: " WEB_USER </dev/tty
 WEB_USER="${WEB_USER:-orca}"
 [[ "$WEB_USER" =~ ^[A-Za-z0-9_.-]+$ ]] || die "Use only letters, numbers, _, ., - in username."
-read -r -s -p "Web login password (minimum 12 characters): " WEB_PASS
+read -r -s -p "Web login password (minimum 12 characters): " WEB_PASS </dev/tty
 printf '\n'
 [[ ${#WEB_PASS} -ge 12 && "$WEB_PASS" != *$'\n'* && "$WEB_PASS" != *$'\r'* ]] || die "Password must be at least 12 characters, without newlines."
-read -r -s -p "Confirm password: " WEB_PASS2
+read -r -s -p "Confirm password: " WEB_PASS2 </dev/tty
 printf '\n'
 [[ "$WEB_PASS" == "$WEB_PASS2" ]] || die "Passwords do not match."
 unset WEB_PASS2
@@ -60,7 +60,7 @@ CONTENT="$(pvesm config "$STORAGE" | sed -n 's/^[[:space:]]*content[[:space:]]\+
 [[ -n "$CONTENT" ]] || die "Cannot determine storage content settings for $STORAGE."
 if [[ ",$CONTENT," != *",rootdir,"* ]]; then
   echo "Storage '$STORAGE' currently allows: $CONTENT"
-  read -r -p "Add 'rootdir' to allowed content types on this storage? [y/N] " enable
+  read -r -p "Add 'rootdir' to allowed content types on this storage? [y/N] " enable </dev/tty
   [[ "$enable" =~ ^[Yy]$ ]] || die "Storage must allow rootdir; cancelled."
   pvesm set "$STORAGE" --content "$CONTENT,rootdir"
 fi
